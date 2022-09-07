@@ -16,3 +16,41 @@ pt.title("CubicSpline")
 pt.scatter(x,y)
 pt.plot(x,y0)
 pt.show()
+
+
+
+
+
+import numpy as np
+import plotly.express as px
+import pandas as pd
+import plotly.graph_objects as go
+from scipy.interpolate import CubicSpline, interp1d
+
+x = np.array([0,8,16,24,32,40])
+y = np.array([14.621,1.843,29.870,8.418,37.305,6.413])
+cs = CubicSpline(x, y)
+linear_int = interp1d(x,y)
+  
+ys = linear_int(x)
+
+df = pd.DataFrame(dict(
+    x = x,
+    y = y,
+))
+fig1 = px.scatter(df, x="x", y="y", title="Prediction and Actual")
+fig1.update_traces(marker=dict(size=12,
+                              line=dict(width=2,
+                                        color='Red')),
+                  selector=dict(mode='markers'))
+df = pd.DataFrame(dict(
+    x = x,
+    y = cs(x),
+))
+fig2 = px.line(df, x="x", y="y")
+fig3 = go.Figure(data=fig1.data + fig2.data)
+fig3.show()
+
+print("the roots of the polynomial are ",cs.roots())
+print("Value at x=36 is ",linear_int(36))
+print("Value at x=4 is ",linear_int(4))
