@@ -1,0 +1,59 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn import metrics
+import plotly.express as px
+import pandas as pd
+import plotly.graph_objects as go
+
+data = pd.read_csv('./532500 (1).csv')
+data.head()
+
+x = data[['Open Price', 'High Price', 'Low Price']]
+y = data['Close Price']
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state = 100)
+
+multiple_regression = LinearRegression()  
+multiple_regression.fit(x_train, y_train)
+
+print("Intercept: ", multiple_regression.intercept_)
+print("Coefficients:")
+for i in range(0,len(multiple_regression.coef_)):
+  print("b{0} : ".format(i),multiple_regression.coef_[i])
+
+y_pred_mlr= multiple_regression.predict(x_test)
+print("Prediction for test set: {}".format(y_pred_mlr))
+
+mlr_diff = pd.DataFrame({'Actual value': y_test, 'Predicted value': y_pred_mlr})
+mlr_diff.head()
+
+df = pd.DataFrame(dict(
+    x = y_test,
+    y = y_pred_mlr,
+))
+fig = px.scatter(df, x="x", y="y",trendline="ols")
+fig.show()
+
+meanAbErr = metrics.mean_absolute_error(y_test, y_pred_mlr)
+meanSqErr = metrics.mean_squared_error(y_test, y_pred_mlr)
+rootMeanSqErr = np.sqrt(metrics.mean_squared_error(y_test, y_pred_mlr))
+print('R squared: {:.2f}'.format(multiple_regression.score(x,y)*100))
+print('Mean Absolute Error:', meanAbErr)
+print('Mean Square Error:', meanSqErr)
+print('Root Mean Square Error:', rootMeanSqErr)
+
+df = data[['Open Price','Close Price']]
+df.corr(method='pearson')
+
+fig = px.scatter(df, x="Open Price", y="Close Price",trendline="ols",title="Open Price vs Close Price")
+fig.show()
+
+df = data[['High Price','Low Price']]
+df.corr(method='pearson')
+
+fig = px.scatter(df, x="High Price", y="Low Price",trendline="ols",title="High Price vs Low Price")
+fig.show()
