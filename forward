@@ -1,0 +1,102 @@
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+import numpy as np
+import plotly.express as px
+import pandas as pd
+import plotly.graph_objects as go
+
+def u_val(u, n):
+	temp = u;
+	for i in range(1, n):
+		temp = temp * (u - i);
+	return temp;
+
+def fact(n):
+	f = 1;
+	for i in range(2, n + 1):
+		f *= i;
+	return f;
+  
+n = 16;
+y_val=[3,6,11,21,32,47,65,87,112,110,171,204,241,284,325,376]
+y = [[0 for i in range(n)]
+		for j in range(n)];
+x = [];
+for i in range(16):
+    x.append((i+1)*5)
+    y[i][0]=y_val[i]
+print(x,y)
+
+for i in range(1, n):
+	for j in range(n - i):
+		y[j][i] = y[j + 1][i - 1] - y[j][i - 1];
+
+# print(y)
+for i in range(n):
+	print(x[i], end = "\t");
+	for j in range(n - i):
+		print(y[i][j], end = "\t");
+	print("");
+
+value = 42;
+sum = y[0][0];
+u = (value - x[0]) / (x[1] - x[0]);
+for i in range(1,n):
+	sum = sum + (u_val(u, i) * y[0][i]) / fact(i);
+print("Value at", value,"is", sum);
+
+df = pd.DataFrame(dict(
+    x = x,
+    y = y_val
+))
+fig = px.line(df, x="x", y="y", title="Speed versus Distance") 
+fig.show()
+
+rateChange=[]
+for i in range(n-1):
+    rateChange.append(y[i][1]) 
+df = pd.DataFrame(dict(
+    x = x[:-1],
+    y = rateChange
+))
+fig = px.line(df, x="x", y="y", title="Changes of Distance versus n") 
+fig.show()
+
+predictionList=[]
+errorList=[]
+for j in range(len(x)):
+    value = x[j];
+    sum = y[0][0];
+    u = (value - x[0]) / (x[1] - x[0]);
+    for i in range(1,n):
+    	sum = sum + (u_val(u, i) * y[0][i]) / fact(i);
+    p1=round(sum, 6)
+    # print("\nValue at", value,"is", p1);
+    predictionList.append(p1)
+    errorList.append(p1-y[j][0])
+print("the rate change is ",rateChange)
+print("The predictions are",predictionList)
+print("The error is ",errorList)
+df = pd.DataFrame(dict(
+    x = x,
+    y = y_val,
+))
+fig1 = px.scatter(df, x="x", y="y", title="Prediction and Actual") 
+fig1.update_traces(marker=dict(size=12,
+                              line=dict(width=2,
+                                        color='Red')),
+                  selector=dict(mode='markers'))
+df = pd.DataFrame(dict(
+    x = x,
+    y = predictionList,
+))
+fig2 = px.line(df, x="x", y="y")
+df = pd.DataFrame(dict(
+    x = x,
+    y = errorList,
+))
+fig3 = px.line(df, x="x", y="y")
+fig4 = go.Figure(data=fig1.data + fig2.data + fig3.data)
+fig4.show()
+
+print(stats.ttest_ind(a=np.array(y_val), b=np.array(predictionList), equal_var=True))
