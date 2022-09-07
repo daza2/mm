@@ -88,3 +88,8 @@ if(q==1):
     
 else:
      ma_p=Multiplereg(ma,yet,q)
+
+
+from statsmodels.tsa.arima_model import ARIMA
+arma_mod20 = ARIMA(pd.DataFrame(y), order=(2, 2, 2)).fit()
+print(arma_mod20.params)
