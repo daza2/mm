@@ -1,0 +1,63 @@
+import plotly.express as px
+import pandas as pd
+y=[]
+y.append(0)
+r=0
+x=[0]
+for i in range(1,50):
+  x.append(i)
+  y.append(pow(r,i-1)*y[0])
+df = pd.DataFrame(dict(
+    x = x,
+    y = y
+))
+fig = px.line(df, x="x", y="y", title="Dynamical System") 
+fig.show()
+
+y=[]
+y.append(20)
+r=0.2
+x=[0]
+for i in range(1,50):
+  x.append(i)
+  y.append(pow(r,i-1)*y[0])
+df = pd.DataFrame(dict(
+    x = x,
+    y = y
+))
+fig = px.line(df, x="x", y="y", title="Dynamical System") 
+fig.show()
+
+y=[]
+y.append(20)
+r=-0.2
+x=[0]
+for i in range(1,50):
+  x.append(i)
+  y.append(pow(r,i-1)*y[0])
+df = pd.DataFrame(dict(
+    x = x,
+    y = y
+))
+fig = px.line(df, x="x", y="y", title="Dynamical System") 
+fig.show()
+
+
+
+
+import plotly.express as px
+import pandas as pd
+
+y = []
+doses=[0.1,0.2,0.3]
+y.append(0.1)
+x=[0]
+for i in range(1,50):
+  x.append(i)
+  y.append(0.5*(y[i-1]+doses[i%3]))
+df = pd.DataFrame(dict(
+    x = x,
+    y = y
+))
+fig = px.line(df, x="x", y="y", title="Amount of Digoxin in Blood vs days") 
+fig.show()
