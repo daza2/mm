@@ -1,0 +1,34 @@
+import matplotlib.pyplot as pt
+
+x=[0,1,2,5.5,11,13,16,18]
+y=[0.5,3.134,5.3,9.9,10.2,9.535,7.2,6.2]
+
+def lagrange(x0):
+    value=0
+    for i in range(0,len(y)):
+       nr=1
+       dr=1
+       for j in range(0,len(y)):
+           if(i!=j):
+               nr*=(x0-x[j])
+               dr*=(x[i]-x[j])
+       value+=y[i]*(nr/dr)
+    return value
+y0=[]
+for i in x:
+    y0.append(i)
+
+#at x=0.5
+x0=0.5
+y1=lagrange(x0)
+print(y1)
+
+#x0=3
+x0=3
+y1=lagrange(x0)
+print(y1)
+
+pt.title("Lagrange Interpolation Formula")    
+pt.plot(x,y)
+pt.plot(x,y0)
+pt.show()
