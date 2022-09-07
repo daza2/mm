@@ -1,0 +1,90 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy import stats
+import statsmodels.api as sm
+from sklearn.linear_model import LinearRegression
+
+def linearreg(x,y):
+    slope,intercept,r,p,std_err=stats.linregress(x,y)
+    y0=[]
+    for i in range(0,len(x)):
+        dummy=0
+        dummy=intercept+(slope*x[i])
+        y0.append(dummy)
+        
+    print(slope,"*x +",intercept)
+    return y0
+
+def Multiplereg(x,y,p):
+    #Data=pd.DataFrame([x])
+    x=np.array(x)
+    mlr = LinearRegression()
+    mlr.fit(x.transpose(),y)
+    y0=[]
+    for i in range(0,len(y)):
+        dummy=mlr.intercept_
+        for j in range(p):
+            dummy+=x[j][i]*mlr.coef_[j]
+        #print(dummy)
+        y0.append(dummy)
+    for i in range(len(mlr.coef_)):
+        print("(",mlr.coef_[i],"*x",i+1,")",end=" ")
+        if(i<p-1):
+            print("+",end=" ")
+            
+    return y0
+    
+
+file = pd.read_csv('./532500.csv')
+Close=np.array(file['Open Price'])
+# Close=np.array([22,23,21,31,23,42,45,34,57,58,62,55])
+y=np.array(Close)
+ar=[]
+ma=[]
+ar_p=[]
+ma_p=[]
+
+sm.graphics.tsa.plot_acf(y,lags=2)
+sm.graphics.tsa.plot_pacf(y,lags=2)
+
+p=2
+q=2
+yt=y[p:]
+
+for i in range(1,p+1):
+    temp=y[0:len(y)-i]
+    ar.append(temp[p-i:])
+    
+print("\nYt:",len(yt))
+print("\nAr:",len(ar))
+print(len(ar[0]), len(yt))
+
+#print("\nAR:", ar)
+"""for i in range(1,q):
+    temp=y[0:len(y)-i]
+    ma.append(temp[q-i:])"""
+print("Auto Regression")
+if(p==1):
+    ar_p=linearreg(ar[0],yt)
+    
+else:
+     ar_p=Multiplereg(ar,yt,p)
+     
+ye=[]
+
+print("\n Moving Average")
+for i in range(len(ar_p)):
+    ye.append(yt[i]-ar_p[i])
+for i in range(1,q+1):
+    temp=ye[0:len(ye)-i]
+    ma.append(temp[q-i:])
+
+ye = np.array(ye)
+yet=ye[q:]
+   
+if(q==1):
+    ma_p=linearreg(ma[0],yet)
+    
+else:
+     ma_p=Multiplereg(ma,yet,q)
