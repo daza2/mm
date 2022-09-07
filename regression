@@ -1,0 +1,25 @@
+import numpy as np
+import scipy.stats as stats
+import plotly.express as px
+import pandas as pd
+
+x = np.array([200,250,200,250,189.65,260.35,225,225,225,225,225,225])
+y = np.array([43,78,69,73,48,78,65,74,76,79,83,81])
+
+linear_reg = np.poly1d(np.polyfit(x, y, 1))
+df = pd.DataFrame(dict(
+    x = x,
+    y = y
+))
+fig = px.scatter(df, x="x", y="y",trendline='ols', title="Linear Regression") 
+fig.show()
+
+predictedY=linear_reg(x)
+print("Coefficients b0 and b1 : ")
+print(linear_reg.coefficients)
+print("Correleation Coeff")
+print(np.corrcoef(x,y))
+print(stats.ttest_ind(a=y, b=predictedY, equal_var=True))
+print("R2 score is",r2_score(y, linear_reg(x)))
+
+
