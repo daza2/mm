@@ -1,0 +1,86 @@
+#setup
+import sys
+period=[1,2,3,4]
+# period=[1,2,3]
+demand=[5,2,3,3]
+# demand=[3,2,4]
+setup=[5,7,9,7]
+# setup=[3,7,6]
+holding=[1,1,1,1]
+# holding=[1,3,2]
+x1=0
+def cost(x):
+  if x<=6:
+    return x
+  elif x>=7:
+    return 6+2*(x-6)
+def inventory_cost(x,z,i):
+  if i==0:
+    return cost(z)+holding[i]*x+setup[i]
+  else:
+    if z==0:
+      return cost(z)+holding[i]*x+f[i-1][x+demand[i]-z]
+    else:
+      return cost(z)+holding[i]*x+f[i-1][x+demand[i]-z]+setup[i]
+  f=[]
+z=[]
+for i in range(0,len(period)):
+  if i==0:
+    x_start=0
+    x_end=sum(demand,-demand[0])
+    z_start=demand[0]-x1
+    z_end=sum(demand,-demand[0])+z_start
+    l1=[]
+    l2=[]
+    for j in range(x_start,x_end+1):
+        cost_val=inventory_cost(j,j+demand[0]-x1,i)
+        l2.append(j+demand[0]-x1)
+        l1.append(cost_val)
+    f.append(l1)
+    z.append(l2)
+  elif i<len(period)-1:
+    x_start=0
+    x_end=sum(demand[i+1:])
+    z_start=0
+    l1=[]
+    l2=[]
+    for j in range(x_start,x_end+1):
+      cost_val=sys.maxsize
+      for l in range(z_start,demand[i]+j+1):
+        if cost_val>inventory_cost(j,l,i):
+          ind=l
+          cost_val=min(cost_val,inventory_cost(j,l,i))
+      l1.append(cost_val)
+      l2.append(ind)
+    z.append(l2)
+    f.append(l1)
+  else:
+    x_start=0
+    x_end=1
+    z_start=0
+    l1=[]
+    l2=[]
+    for j in range(x_start,x_end):
+      cost_val=sys.maxsize
+      for l in range(z_start,demand[i]+x_start+1):
+        if cost_val>inventory_cost(j,l,i):
+          ind=l
+          cost_val=min(cost_val,inventory_cost(j,l,i))
+      l1.append(cost_val)
+      l2.append(ind)
+    f.append(l1)
+    z.append(l2)
+actual_z=[0]*len(period)
+actual_x=[0]*(len(period)+1)
+opt=f[len(period)-1].index(min(f[len(period)-1]))
+actual_x[len(period)-1]=opt
+actual_z[len(period)-1]=z[len(period)-1][opt]
+for i in range(len(period)-1,0,-1):
+  actual_x[i]=actual_x[i+1]+demand[i]-actual_z[i]
+  actual_z[i-1]=z[i-1][actual_x[i]]
+print("Inventory at the start of period 1 (x1) is 0")
+for i in range(1,len(actual_x)):
+
+  print("Inventory at the start of period {i} (x{value}) is {x}\n".format(i=i+1,value=i+1,x=actual_x[i]))
+  print("Inventory to be produced in period {i} (z{value}) is {z}".format(i=i,value=i,z=actual_z[i-1]))
+print("The optimal production cost is ",f[len(period)-1][0])
