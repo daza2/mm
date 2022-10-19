@@ -1,0 +1,19 @@
+import math
+d=100
+k=100
+h=0.02
+l=12
+y=math.sqrt((2*k*d)/h)
+print("Optimum inventory policy y is",y,"units")
+t0=y/d
+print("Associated cycle length is",t0,"days")
+if(l>t0):
+  n=math.floor(l/t0)
+  print("n =",n)
+  le=l-(n*t0)
+else:
+  le=l
+print("Effective lead time is",le,"days")
+print("Order {y} units whenever the inventory level drops to {led} units".format(y=y,led=le*d))
+tcu=k/(y/d)+h*(y/2)
+print("Daily inventory cost is $",tcu)
