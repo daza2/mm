@@ -1,0 +1,41 @@
+#Price break
+import numpy as np
+d=187.5
+k=20
+h=0.02
+l=2
+c1=3
+c2=2.5
+q=1000
+
+ym = np.sqrt(2*k*d/h)
+print(f"ym={ym}")
+
+tcu = c1*d + k*d/ym + h*ym/2
+print(f"tcu1={tcu}")
+
+a=1
+b=2*((c2*d - tcu)/h)
+c=2*k*d/h
+
+q1 = (-b+np.sqrt(b*b - 4*a*c))/2*a
+q2 = (-b-np.sqrt(b*b - 4*a*c))/2*a
+
+Q = max(q1, q2)
+print(f"Q={Q}")
+
+# calculate zones
+z1 = (0, ym)
+z2 = (ym, Q)
+z3 = (Q, np.inf)
+print(f"Zones z1={z1} z2={z2} z3={z3}")
+print("Since q lies in zone 2, the optimal order quantity is ",q)
+y = np.linspace(1, 11000, 100)
+tcu1 = d*c1 + (k*d)/y + (h/2)*y  
+tcu2 = d*c2 + (k*d)/y + (h/2)*y
+
+plt.plot(y,tcu1,"b-",label="y vs tcu1")
+plt.plot(y,tcu2,"-g",label="y vs tcu2")
+plt.ylim(0,1000)
+plt.legend()
+plt.show()
