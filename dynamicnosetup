@@ -1,0 +1,34 @@
+#no setup
+period=[1,2,3,4]
+regular=[90,100,120,110]
+overtime=[50,60,80,70]
+demand=[100,190,210,160]
+r=[0]*len(period)
+o=[0]*len(period)
+cost=0
+for i in range(0,len(demand)):
+  if(demand[i]>regular[i]):
+    r[i]=regular[i]
+    regular[i]=0
+    if(overtime[i]>demand[i]-r[i]):
+      overtime[i]=overtime[i]-(demand[i]-r[i])
+      l1=[]
+      l1.append(demand[i]-r[i])
+      o[i]=l1
+    else:
+      l1=[]
+      l1.append(overtime[i])
+      o[i]=l1
+      for j in range(0,i):
+        if(overtime[j]>=demand[i]-(r[i]+overtime[i])):
+          o[j].append(demand[i]-(r[i]+overtime[i]))
+        else:
+          break
+      overtime[i]=0
+for i in r:
+  cost+=i*6
+for i in o:
+  for j in range(0,len(i)):
+    cost+=i[j]*9+(i[j]*((j)*0.1))
+print("Total cost : ",cost)
+print("Regular and overtime units : ",r,o)
