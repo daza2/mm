@@ -1,0 +1,23 @@
+import matplotlib.pyplot as plt
+from scipy import optimize
+import numpy as np
+
+k = [10, 5, 15]
+d = [2, 4, 4]
+h= [0.3, 0.1, 0.2]
+y = [1, 1, 1]
+a = [1, 1, 1]
+
+def f(x):  
+    val = (k[0]*d[0]/x[0] + h[0]*x[0]/2) + (k[1]*d[1]/x[1] + h[1]*x[1]/2) + (k[2]*d[2]/x[2] + h[2]*x[2]/2) 
+    print(f"F(x) = {val}")
+    return val
+
+
+def constraint(x):
+    # print(x)
+    return 50 - np.sum(x*a)
+
+result = optimize.minimize(f, [1,1,1], constraints={"fun": constraint, "type": "ineq"}, method='SLSQP', bounds=((0, 10000), (0, 10000), (0, 10000)))
+print(f"y values: {list(result['x'])}")
+print()
